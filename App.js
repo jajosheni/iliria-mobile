@@ -10,18 +10,23 @@ type Props = {};
 export default class App extends Component<Props> {
     state = {
         selected: undefined,
+        page: Number,
     };
     constructor(props){
         super(props);
-        this.state ={ isLoading: true}
+        this.state ={
+            isLoading: true,
+            page: 1,
+            jsonObj: {},
+        }
     }
     componentDidMount(){
-        return fetch(`${SERVER}/api/articles`)
+        return fetch(`${SERVER}/api/articles/?page=${this.state.page}`)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
                     isLoading: false,
-                    jsonObj: [...responseJson],
+                    jsonObj: responseJson,
                 }, function(){
 
                 });
@@ -53,8 +58,31 @@ export default class App extends Component<Props> {
         />
     );
 
+    scrollFix = false;
+
     loadMore = () => {
-      console.log('end reached!');
+        if(!this.scrollFix) {
+            this.scrollFix = true;
+            let nextPage = this.state.page + 1;
+            fetch(`${SERVER}/api/articles/?page=${nextPage}`)
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    let nextObj = [...this.state.jsonObj];
+                    nextObj.push(...responseJson);
+                    this.setState({
+                        jsonObj: nextObj,
+                        page: nextPage,
+                    }, function () {
+
+                    });
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }else{
+            this.scrollFix = false;
+        }
     };
 
     render(){
@@ -70,7 +98,7 @@ export default class App extends Component<Props> {
             <View style={styles.body}>
                 <FlatList
                     style={styles.flatlist}
-                    data={this.state.jsonObj}
+                    data={[...this.state.jsonObj]}
                     extraData={this.state}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
@@ -78,6 +106,7 @@ export default class App extends Component<Props> {
                     ListHeaderComponentStyle={styles.header}
                     onEndReached={this.loadMore}
                     onEndReachedThreshold={0.1}
+                    refreshing={true}
                 />
             </View>
         );

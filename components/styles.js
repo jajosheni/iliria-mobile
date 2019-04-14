@@ -15,7 +15,7 @@ export default reactCSS({
             flex:1,
             justifyContent: 'center',
             alignItems: 'center',
-            height: 50,
+            height: 55,
             width:'100%',
             backgroundColor: HEAD,
         },
