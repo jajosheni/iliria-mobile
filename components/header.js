@@ -1,12 +1,66 @@
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, ScrollView, Image, TouchableOpacity} from 'react-native';
+import styles from './styles/categoryStyle';
+import Category from './category';
+import {HOME} from './styles/common';
 
 export default class MyHeader extends Component {
-    render() {
-        return (
-            <View>
-                <Text>This is a Header!</Text>
+    state = {
+        SERVER : this.props.server,
+        isLoaded : false,
+        categories: [],
+    };
+
+    _onPress = (title: string) => {
+        if(typeof(title) == 'object')
+            this.props.onPressItem('navigateHome');
+        else this.props.onPressItem(title);
+    };
+
+    loadCategories = () => {
+        fetch(`${this.state.SERVER}/api/categories`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                for(let eachCategory of responseJson){
+                    this.state.categories.push(
+                        <Category
+                            key={eachCategory.category}
+                            title={eachCategory.category}
+                            onPressItem={this._onPress}
+                    />);
+                }
+                this.setState({
+                    isLoaded: true,
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    renderCategories = () => {
+        return(
+            <View style={styles.container}>
+                <TouchableOpacity onPress={this._onPress}>
+                    <View style={styles.home}>
+                        <Image style={styles.img} source={HOME}/>
+                    </View>
+                </TouchableOpacity>
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                >
+                    {this.state.categories}
+                </ScrollView>
             </View>
+        );
+    };
+
+    render() {
+        if(!this.state.isLoaded)
+            this.loadCategories();
+        return (
+            this.renderCategories()
         );
     }
 }

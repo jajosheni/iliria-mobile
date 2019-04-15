@@ -1,26 +1,37 @@
 import React, {Component} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
-import styles from './components/styles';
+import {ActivityIndicator, FlatList, RefreshControl, View, BackHandler} from 'react-native';
+import {handleAndroidBackButton} from './components/modules/androidBackButton';
+import {quitAlert} from './components/modules/alert';
+
+import styles from './components/styles/styles';
 import Article from './components/article';
-import header from './components/header';
+import ArticlePage from './components/articlePage';
+import Header from './components/header';
 
 const SERVER = `http://10.0.2.2:3000`;
 
 type Props = {};
 export default class App extends Component<Props> {
     state = {
+        category: undefined,
         selected: undefined,
         page: Number,
     };
+
     constructor(props){
         super(props);
         this.state ={
+            refreshing: false,
             isLoading: true,
+            showArticle: false,
             page: 1,
             jsonObj: {},
         }
     }
+
     componentDidMount(){
+        handleAndroidBackButton(this.handleBackPress);
+
         return fetch(`${SERVER}/api/articles/?page=${this.state.page}`)
             .then((response) => response.json())
             .then((responseJson) => {
@@ -37,13 +48,60 @@ export default class App extends Component<Props> {
             });
     }
 
+    handleBackPress = () => {
+        if(this.state.showArticle)
+            this.setState({
+                showArticle: false,
+            });
+        else
+            quitAlert();
+    };
+
     _keyExtractor = (item, index) => item._id;
 
     _onPressItem = (id: string) => {
-        this.setState((state) => {
-            return {selected: id};
+        this.setState({
+            selected: id,
+            showArticle: true,
+        }, function(){
+
         });
-        console.log(this.state.selected)
+    };
+
+    _categoryPress = (title: string) => {
+        this.state.json = {};
+        this.state.page = 1;
+        this.loadCategoryArticles(title);
+        this.setState({
+            category: title,
+        })
+    };
+
+    loadCategoryArticles = (title: string) => {
+        if(title==='navigateHome'){
+            this.state.page = 1;
+            fetch(`${SERVER}/api/articles/?page=${this.state.page}`)
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({
+                        jsonObj: responseJson,
+                        category: undefined,
+                    });
+                })
+                .catch((error) =>{
+                    console.error(error);
+                });
+        }
+        else fetch(`${SERVER}/api/categories/${title}/?page=${this.state.page}`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    jsonObj: responseJson,
+                });
+            })
+            .catch((error) =>{
+                console.error(error);
+            });
     };
 
     _renderItem = ({item}) => (
@@ -58,13 +116,43 @@ export default class App extends Component<Props> {
         />
     );
 
+    _onRefresh = () => {
+        this.state.page = 1;
+        this.setState({
+            refreshing: true,
+        });
+
+        let fetchURL = `${SERVER}/api/articles/?page=`;
+        if(this.state.category)
+            fetchURL = `${SERVER}/api/categories/${this.state.category}/?page=`;
+
+        fetch(`${fetchURL}${this.state.page}`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    refreshing: false,
+                    jsonObj: responseJson,
+                }, function(){
+
+                });
+
+            })
+            .catch((error) =>{
+                console.error(error);
+            });
+    };
+
     scrollFix = false;
 
     loadMore = () => {
+        let fetchURL = `${SERVER}/api/articles/?page=`;
+        if(this.state.category)
+            fetchURL = `${SERVER}/api/categories/${this.state.category}/?page=`;
+
         if(!this.scrollFix) {
             this.scrollFix = true;
             let nextPage = this.state.page + 1;
-            fetch(`${SERVER}/api/articles/?page=${nextPage}`)
+            fetch(`${fetchURL}${nextPage}`)
                 .then((response) => response.json())
                 .then((responseJson) => {
                     let nextObj = [...this.state.jsonObj];
@@ -88,24 +176,41 @@ export default class App extends Component<Props> {
     render(){
         if(this.state.isLoading){
             return(
-                <View style={{flex: 1, padding: 20}}>
+                <View style={styles.loading}>
                     <ActivityIndicator/>
                 </View>
             )
         }
 
+        if(this.state.showArticle){
+            return(
+                <ArticlePage
+                    style={styles.body}
+                    id={this.state.selected}
+                    server={SERVER}
+                />
+            );
+        }
+
         return(
             <View style={styles.body}>
+                <View style={styles.header}>
+                    <Header server={SERVER} onPressItem={this._categoryPress}/>
+                </View>
                 <FlatList
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
                     style={styles.flatlist}
                     data={[...this.state.jsonObj]}
                     extraData={this.state}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
-                    ListHeaderComponent={header}
-                    ListHeaderComponentStyle={styles.header}
                     onEndReached={this.loadMore}
-                    onEndReachedThreshold={0.1}
+                    onEndReachedThreshold={0.2}
                     refreshing={true}
                 />
             </View>
