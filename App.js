@@ -59,6 +59,28 @@ export default class App extends Component<Props> {
 
     _keyExtractor = (item, index) => item._id;
 
+    _onPressHome = () => {
+        if(this.state.category===undefined)
+            this.flatListRef.scrollToIndex({animated: true, index: 0});
+        else {
+            this.state.page = 1;
+
+            let fetchURL = `${SERVER}/api/articles/?page=`;
+
+            fetch(`${fetchURL}${this.state.page}`)
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({
+                        jsonObj: responseJson,
+                        category: undefined,
+                    });
+                })
+                .catch((error) =>{
+                    console.error(error);
+                });
+        }
+    };
+
     _onPressItem = (id: string) => {
         this.setState({
             selected: id,
@@ -78,21 +100,7 @@ export default class App extends Component<Props> {
     };
 
     loadCategoryArticles = (title: string) => {
-        if(title==='navigateHome'){
-            this.state.page = 1;
-            fetch(`${SERVER}/api/articles/?page=${this.state.page}`)
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    this.setState({
-                        jsonObj: responseJson,
-                        category: undefined,
-                    });
-                })
-                .catch((error) =>{
-                    console.error(error);
-                });
-        }
-        else fetch(`${SERVER}/api/categories/${title}/?page=${this.state.page}`)
+        fetch(`${SERVER}/api/categories/${title}/?page=${this.state.page}`)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
@@ -113,6 +121,7 @@ export default class App extends Component<Props> {
             content={item.content}
             category={item.category}
             date={item.date.toString().substring(0,10)}
+            views={item.views}
         />
     );
 
@@ -195,9 +204,10 @@ export default class App extends Component<Props> {
         return(
             <View style={styles.body}>
                 <View style={styles.header}>
-                    <Header server={SERVER} onPressItem={this._categoryPress}/>
+                    <Header server={SERVER} onPressItem={this._categoryPress} onPressHome={this._onPressHome}/>
                 </View>
                 <FlatList
+                    ref={(ref) => { this.flatListRef = ref; }}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing}

@@ -20,6 +20,9 @@ export default class ArticlePage extends Component {
                     content : responseJson.content || 'No content',
                     category : responseJson.category || 'No category',
                     date : responseJson.date.toString().substring(0,10) || '01-01-1970',
+                    views : responseJson.views || 0,
+                    likes : responseJson.likes || 0,
+                    dislikes : responseJson.dislikes || 0,
                     isLoaded: true,
                 });
             })
@@ -39,10 +42,10 @@ export default class ArticlePage extends Component {
       return(
           <View style={styles.body}>
               <View style={styles.header}>
-                    <Text style={styles.title}>{this.state.title}</Text>
+                    <Text style={styles.title} numberOfLines={2}>{this.state.title}</Text>
               </View>
               <View style={styles.underBlock}>
-                  <Text style={styles.text}>Views: 1</Text>
+                  <Text style={styles.text}>Views: {this.state.views}</Text>
                   <Text style={styles.text}>{this.state.category}</Text>
                   <Text style={styles.text}>{this.state.date}</Text>
               </View>
@@ -55,8 +58,8 @@ export default class ArticlePage extends Component {
                   </View>
               </ScrollView>
               <View style={styles.underBlock}>
-                  <MyButton onPress={this._onPressItem} mode={'like'} title={'Like'}/>
-                  <MyButton onPress={this._onPressItem} mode={'dislike'} title={'Dislike'}/>
+                  <MyButton onPress={this._onPressItem} mode={'like'} title={`Like (${this.state.likes})`}/>
+                  <MyButton onPress={this._onPressItem} mode={'dislike'} title={`Dislike (${this.state.dislikes})`}/>
               </View>
           </View>
       );

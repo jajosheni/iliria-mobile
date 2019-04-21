@@ -11,10 +11,12 @@ export default class MyHeader extends Component {
         categories: [],
     };
 
-    _onPress = (title: string) => {
-        if(typeof(title) == 'object')
-            this.props.onPressItem('navigateHome');
-        else this.props.onPressItem(title);
+    _onPress = (category: string) => {
+        this.props.onPressItem(category);
+    };
+
+    _onPressHome = () => {
+        this.props.onPressHome();
     };
 
     loadCategories = () => {
@@ -41,7 +43,7 @@ export default class MyHeader extends Component {
     renderCategories = () => {
         return(
             <View style={styles.container}>
-                <TouchableOpacity onPress={this._onPress}>
+                <TouchableOpacity onPress={this._onPressHome}>
                     <View style={styles.home}>
                         <Image style={styles.img} source={HOME}/>
                     </View>

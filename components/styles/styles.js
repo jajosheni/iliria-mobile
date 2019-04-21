@@ -31,6 +31,7 @@ export default reactCSS({
         container:{
             flexWrap: 'wrap',
             alignItems: 'flex-start',
+            justifyContent: 'center',
             flexDirection:'row',
             padding: 10,
             marginBottom: 5,
@@ -70,8 +71,21 @@ export default reactCSS({
             flex: 1,
             flexWrap: 'wrap',
             alignItems: 'flex-start',
+            justifyContent: 'space-between',
             flexDirection:'row',
             marginTop: 8,
+        },
+        views:{
+            width: 30,
+            height: 20,
+            marginLeft: 5,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        img:{
+            marginTop: -4,
+            width:19,
+            height:19,
         },
         button: {
             paddingVertical: 5,
