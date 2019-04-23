@@ -14,7 +14,7 @@ export default class MyArticle extends Component {
             content: this.props.content || 'No content',
             category: this.props.category || 'No category',
             date: this.props.date || '01-01-1970',
-            views: this.props.views || 0,
+            views: this.props.views || [],
         };
         return (
             <TouchableOpacity onPress={this._onPress}>
@@ -29,7 +29,7 @@ export default class MyArticle extends Component {
                             <Text style={styles.text} numberOfLines={1}>{props.category}</Text>
                             <Text style={styles.text} numberOfLines={1}>{props.date}</Text>
                             <View style={styles.views}>
-                                <Text  numberOfLines={1} style={{...styles.text, fontSize: 10}}>{props.views}</Text>
+                                <Text  numberOfLines={1} style={{...styles.text, fontSize: 10}}>{props.views.length}</Text>
                                 <Image style={styles.img} source={VIEW}/>
                             </View>
                         </View>

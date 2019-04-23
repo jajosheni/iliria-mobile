@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import fetch from 'react-native-fetch-polyfill';
 import {View, Text, ScrollView, Image, TouchableOpacity} from 'react-native';
 import styles from './styles/categoryStyle';
 import Category from './category';
@@ -20,7 +21,7 @@ export default class MyHeader extends Component {
     };
 
     loadCategories = () => {
-        fetch(`${this.state.SERVER}/api/categories`)
+        fetch(`${this.state.SERVER}/api/categories`, {timeout: 5*1000})
             .then((response) => response.json())
             .then((responseJson) => {
                 for(let eachCategory of responseJson){
@@ -36,7 +37,7 @@ export default class MyHeader extends Component {
                 });
             })
             .catch((error) => {
-                console.error(error);
+                alert("Can't connect to Server");
             });
     };
 

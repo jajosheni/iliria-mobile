@@ -6,6 +6,7 @@ export default class MyButton extends Component {
     _onPress = () => {
         this.props.onPress(this.props.mode);
     };
+
     render() {
         return (
             <View>

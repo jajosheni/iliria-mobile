@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {ActivityIndicator, FlatList, RefreshControl, View, BackHandler} from 'react-native';
+import fetch from 'react-native-fetch-polyfill';
 import {handleAndroidBackButton} from './components/modules/androidBackButton';
 import {quitAlert} from './components/modules/alert';
 
@@ -7,6 +8,8 @@ import styles from './components/styles/styles';
 import Article from './components/article';
 import ArticlePage from './components/articlePage';
 import Header from './components/header';
+
+import LoginPage from './components/loginPage';
 
 const SERVER = `http://10.0.2.2:3000`;
 
@@ -31,21 +34,6 @@ export default class App extends Component<Props> {
 
     componentDidMount(){
         handleAndroidBackButton(this.handleBackPress);
-
-        return fetch(`${SERVER}/api/articles/?page=${this.state.page}`)
-            .then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({
-                    isLoading: false,
-                    jsonObj: responseJson,
-                }, function(){
-
-                });
-
-            })
-            .catch((error) =>{
-                console.error(error);
-            });
     }
 
     handleBackPress = () => {
@@ -57,7 +45,48 @@ export default class App extends Component<Props> {
             quitAlert();
     };
 
+    _onLogin = (username:string) => {
+        fetch(`${SERVER}/api/articles/?page=${this.state.page}`, {timeout: 5*1000})
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    jsonObj: responseJson,
+                    isLoading: false,
+                    username: username,
+                });
+            })
+            .catch((error) =>{
+                alert("Can't connect to Server");
+            });
+    };
+
     _keyExtractor = (item, index) => item._id;
+
+    _onRefresh = () => {
+        this.state.page = 1;
+        this.setState({
+            refreshing: true,
+        });
+
+        let fetchURL = `${SERVER}/api/articles/?page=`;
+        if(this.state.category)
+            fetchURL = `${SERVER}/api/categories/${this.state.category}/?page=`;
+
+        fetch(`${fetchURL}${this.state.page}`, { timeout: 5*1000 })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    refreshing: false,
+                    jsonObj: responseJson,
+                });
+            })
+            .catch((error) =>{
+                alert("Can't connect to Server");
+            });
+        setTimeout(() => this.setState({
+            refreshing: false,
+        }), 7 * 1000)
+    };
 
     _onPressHome = () => {
         if(this.state.category===undefined)
@@ -67,7 +96,7 @@ export default class App extends Component<Props> {
 
             let fetchURL = `${SERVER}/api/articles/?page=`;
 
-            fetch(`${fetchURL}${this.state.page}`)
+            fetch(`${fetchURL}${this.state.page}`, {timeout: 5*1000})
                 .then((response) => response.json())
                 .then((responseJson) => {
                     this.setState({
@@ -76,7 +105,7 @@ export default class App extends Component<Props> {
                     });
                 })
                 .catch((error) =>{
-                    console.error(error);
+                    alert("Can't connect to Server");
                 });
         }
     };
@@ -85,8 +114,6 @@ export default class App extends Component<Props> {
         this.setState({
             selected: id,
             showArticle: true,
-        }, function(){
-
         });
     };
 
@@ -96,11 +123,11 @@ export default class App extends Component<Props> {
         this.loadCategoryArticles(title);
         this.setState({
             category: title,
-        })
+        });
     };
 
     loadCategoryArticles = (title: string) => {
-        fetch(`${SERVER}/api/categories/${title}/?page=${this.state.page}`)
+        fetch(`${SERVER}/api/categories/${title}/?page=${this.state.page}`, {timeout: 5*1000})
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
@@ -108,7 +135,7 @@ export default class App extends Component<Props> {
                 });
             })
             .catch((error) =>{
-                console.error(error);
+                alert("Can't connect to Server");
             });
     };
 
@@ -125,32 +152,6 @@ export default class App extends Component<Props> {
         />
     );
 
-    _onRefresh = () => {
-        this.state.page = 1;
-        this.setState({
-            refreshing: true,
-        });
-
-        let fetchURL = `${SERVER}/api/articles/?page=`;
-        if(this.state.category)
-            fetchURL = `${SERVER}/api/categories/${this.state.category}/?page=`;
-
-        fetch(`${fetchURL}${this.state.page}`)
-            .then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({
-                    refreshing: false,
-                    jsonObj: responseJson,
-                }, function(){
-
-                });
-
-            })
-            .catch((error) =>{
-                console.error(error);
-            });
-    };
-
     scrollFix = false;
 
     loadMore = () => {
@@ -161,7 +162,8 @@ export default class App extends Component<Props> {
         if(!this.scrollFix) {
             this.scrollFix = true;
             let nextPage = this.state.page + 1;
-            fetch(`${fetchURL}${nextPage}`)
+
+            fetch(`${fetchURL}${nextPage}`, {timeout: 5*1000})
                 .then((response) => response.json())
                 .then((responseJson) => {
                     let nextObj = [...this.state.jsonObj];
@@ -169,13 +171,10 @@ export default class App extends Component<Props> {
                     this.setState({
                         jsonObj: nextObj,
                         page: nextPage,
-                    }, function () {
-
                     });
-
                 })
                 .catch((error) => {
-                    console.error(error);
+                    alert("Can't connect to Server");
                 });
         }else{
             this.scrollFix = false;
@@ -185,15 +184,14 @@ export default class App extends Component<Props> {
     render(){
         if(this.state.isLoading){
             return(
-                <View style={styles.loading}>
-                    <ActivityIndicator/>
-                </View>
+                <LoginPage onLogin={this._onLogin} server={SERVER}/>
             )
         }
 
         if(this.state.showArticle){
             return(
                 <ArticlePage
+                    user={this.state.username}
                     style={styles.body}
                     id={this.state.selected}
                     server={SERVER}

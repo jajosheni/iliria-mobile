@@ -19,10 +19,6 @@ export default reactCSS({
             backgroundColor: HEAD,
             marginVertical: 5,
         },
-        loading:{
-            flex: 1,
-            padding: 20,
-        },
         flatlist:{
             margin: 0,
             padding: 0,
