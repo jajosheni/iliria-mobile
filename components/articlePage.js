@@ -3,6 +3,7 @@ import fetch from 'react-native-fetch-polyfill';
 import {Image, View, Text, ScrollView} from 'react-native';
 import styles from './styles/articleStyle';
 import MyButton from './button';
+import {_cantConnect} from "./modules/cantConnect";
 
 export default class ArticlePage extends Component {
     state = {
@@ -64,7 +65,7 @@ export default class ArticlePage extends Component {
                     disliked: this.state.dislikes.includes(this.state.user),
                 });
         }).catch((error) => {
-            alert("Can't connect to Server");
+            _cantConnect();
             });
 
         //UPDATE VIEWS
@@ -76,7 +77,7 @@ export default class ArticlePage extends Component {
             body: form,
             timeout: 5 * 1000,
         }).catch((error) => {
-            alert("Can't connect to Server");
+            _cantConnect();
         });
     };
 
@@ -95,7 +96,7 @@ export default class ArticlePage extends Component {
             body: form,
             timeout: 3 * 1000,
         }).catch((error) => {
-            alert("Can't connect to Server");
+            _cantConnect();
         });
     };
 

@@ -4,6 +4,7 @@ import {View, Text, ScrollView, Image, TouchableOpacity} from 'react-native';
 import styles from './styles/categoryStyle';
 import Category from './category';
 import {HOME} from './styles/common';
+import {_cantConnect} from "./modules/cantConnect";
 
 export default class MyHeader extends Component {
     state = {
@@ -24,6 +25,7 @@ export default class MyHeader extends Component {
         fetch(`${this.state.SERVER}/api/categories`, {timeout: 5*1000})
             .then((response) => response.json())
             .then((responseJson) => {
+                this.state.categories = [];
                 for(let eachCategory of responseJson){
                     this.state.categories.push(
                         <Category
@@ -37,7 +39,7 @@ export default class MyHeader extends Component {
                 });
             })
             .catch((error) => {
-                alert("Can't connect to Server");
+                _cantConnect();
             });
     };
 

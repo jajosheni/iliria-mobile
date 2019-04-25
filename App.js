@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {ActivityIndicator, FlatList, RefreshControl, View, BackHandler} from 'react-native';
+import {FlatList, RefreshControl, View, ToastAndroid} from 'react-native';
 import fetch from 'react-native-fetch-polyfill';
 import {handleAndroidBackButton} from './components/modules/androidBackButton';
 import {quitAlert} from './components/modules/alert';
+import {_cantConnect} from "./components/modules/cantConnect";
 
 import styles from './components/styles/styles';
 import Article from './components/article';
@@ -10,8 +11,10 @@ import ArticlePage from './components/articlePage';
 import Header from './components/header';
 
 import LoginPage from './components/loginPage';
+import AsyncStorage from "@react-native-community/async-storage";
 
 const SERVER = `http://10.0.2.2:3000`;
+//const SERVER = `http://192.168.137.1:3000`;
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -46,6 +49,11 @@ export default class App extends Component<Props> {
     };
 
     _onLogin = (username:string) => {
+        try {
+            AsyncStorage.setItem('@userName', username);
+        } catch (e) {
+            console.log('Saving error:', e);
+        }
         fetch(`${SERVER}/api/articles/?page=${this.state.page}`, {timeout: 5*1000})
             .then((response) => response.json())
             .then((responseJson) => {
@@ -56,7 +64,7 @@ export default class App extends Component<Props> {
                 });
             })
             .catch((error) =>{
-                alert("Can't connect to Server");
+                _cantConnect();
             });
     };
 
@@ -81,7 +89,7 @@ export default class App extends Component<Props> {
                 });
             })
             .catch((error) =>{
-                alert("Can't connect to Server");
+                _cantConnect();
             });
         setTimeout(() => this.setState({
             refreshing: false,
@@ -105,7 +113,7 @@ export default class App extends Component<Props> {
                     });
                 })
                 .catch((error) =>{
-                    alert("Can't connect to Server");
+                    _cantConnect();
                 });
         }
     };
@@ -135,7 +143,7 @@ export default class App extends Component<Props> {
                 });
             })
             .catch((error) =>{
-                alert("Can't connect to Server");
+                _cantConnect();
             });
     };
 
@@ -174,7 +182,7 @@ export default class App extends Component<Props> {
                     });
                 })
                 .catch((error) => {
-                    alert("Can't connect to Server");
+                    _cantConnect();
                 });
         }else{
             this.scrollFix = false;

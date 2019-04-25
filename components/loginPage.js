@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import {View, Image, Text, TextInput, ActivityIndicator} from 'react-native';
+import {View, Image, Text, TextInput, ActivityIndicator, ToastAndroid} from 'react-native';
 import fetch from 'react-native-fetch-polyfill';
+import {_cantConnect} from "./modules/cantConnect";
+import AsyncStorage from '@react-native-community/async-storage';
 
 import styles from './styles/loginStyle';
 import {LOGIN} from "./styles/common";
@@ -11,6 +13,20 @@ export default class LoginPage extends Component {
         SERVER : this.props.server,
         text: 'Type your name...',
         entered: false,
+        userLoad: true,
+    };
+
+    getData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('@userName');
+            if(value !== null) {
+                this.setState({
+                    text: value,
+                });
+            }
+        } catch(e) {
+            console.log('Reading error:', e);
+        }
     };
 
     _onLoginPress = (mode: string) => {
@@ -18,7 +34,13 @@ export default class LoginPage extends Component {
             this.setState({
                 text: '',
             });
-            alert("Please enter your name!");
+            ToastAndroid.showWithGravityAndOffset(
+                'Please enter your username...',
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+                0,
+                150,
+            );
         }
         else{
             this.setState({
@@ -38,7 +60,7 @@ export default class LoginPage extends Component {
             }).then((response) => {
                 this.props.onLogin(this.state.text.trim().toLowerCase());
             }).catch((error) => {
-                alert("Can't connect to Server");
+                _cantConnect();
                 this.setState({
                     loading: false,
                 });
@@ -62,6 +84,10 @@ export default class LoginPage extends Component {
     };
 
     renderPage = () => {
+        if(this.state.userLoad) {
+            this.state.userLoad = false;
+            this.getData();
+        }
         return(
             <View style={styles.body}>
                 <View style={styles.upper}>
@@ -92,8 +118,7 @@ export default class LoginPage extends Component {
                     <ActivityIndicator color={'#000'}/>
                 </View>
             );
-        }else
-        return (
+        }else return (
             this.renderPage()
         );
     }
