@@ -7,7 +7,7 @@
 
 <h4 align="center">Cross Platform Digital newsletter application</h4>
 <p align="center">
-	<img src="https://img.shields.io/badge/description-Image-FB7774.svg"/>
+	<img width="270px" src="./scr/scr1.jpg"/><img width="270px" src="./scr/scr2.jpg"/><img width="270px" src="./scr/scr3.jpg"/>
 </p>
 
 ### Installation
