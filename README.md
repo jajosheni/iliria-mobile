@@ -4,8 +4,6 @@
 <img src="https://img.shields.io/badge/react-native-61dbfb.svg"/>
 <img src="https://img.shields.io/badge/react-JS-ff00ff.svg"/>
 <img src="https://img.shields.io/badge/fire-base-FBCB02.svg"/>
-
-<h4 align="center">Cross Platform Digital newsletter application</h4>
 <p align="center">
 	<img src="./scr/scr1.jpg"/>
 </p>
