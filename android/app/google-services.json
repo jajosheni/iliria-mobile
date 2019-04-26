@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "322142935791",
+    "firebase_url": "https://iliria.firebaseio.com",
+    "project_id": "iliria",
+    "storage_bucket": "iliria.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322142935791:android:a8ec6aecd4b95cbb",
+        "android_client_info": {
+          "package_name": "com.lab.iliria"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322142935791-uop95jog9vglbugjolg4ocdmbdlqm3ep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3zYbBTm7FNQlpiaRjOqQrOooy0EyaeGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322142935791-uop95jog9vglbugjolg4ocdmbdlqm3ep.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
