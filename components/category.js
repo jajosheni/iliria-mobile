@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image,TouchableOpacity, View, Text} from 'react-native';
+import {TouchableOpacity, View, Text} from 'react-native';
 import styles from './styles/categoryStyle';
 
 export default class MyCategory extends Component {

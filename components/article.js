@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Image,TouchableOpacity, View, Text} from 'react-native';
 import styles from './styles/styles';
-import {HOME, VIEW} from "./styles/common";
+import { VIEW } from "./styles/common";
 
 export default class MyArticle extends Component {
     _onPress = () => {

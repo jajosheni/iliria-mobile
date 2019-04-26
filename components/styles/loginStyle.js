@@ -1,6 +1,7 @@
 import reactCSS from 'reactcss';
 import {BG, FG, TXT, HEAD, IMG} from './common';
-import {Dimensions} from "react-native";
+import {Dimensions} from 'react-native';
+
 const {height, width} = Dimensions.get('window');
 
 export default reactCSS({

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FlatList, RefreshControl, View} from 'react-native';
+import {FlatList, RefreshControl, ToastAndroid, View} from 'react-native';
 import fetch from 'react-native-fetch-polyfill';
 import firebase from 'react-native-firebase';
 import type { Notification, NotificationOpen } from 'react-native-firebase';
@@ -47,23 +47,16 @@ export default class App extends Component<Props> {
         }
       });
 
-    firebase.messaging().getToken()
-      .then(fcmToken => {
-        if (fcmToken) {
-          console.log('TOKEN: ',fcmToken)
-        } else {
-          console.log('): no token');
-        }
-      });
-
-    this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
-      console.log('TOKEN CHANGED: ', fcmToken);
-    });
+    this.subscribeToTopic = () => {
+      firebase.messaging().subscribeToTopic('news');
+    };
 
     firebase.notifications().getInitialNotification()
       .then((notificationOpen: NotificationOpen) => {
         if (notificationOpen) {
           const notification: Notification = notificationOpen.notification;
+          //console.log('THIS RUNS ON BACKGROUND:', notificationOpen);
+
           this.setState({
             selected : notification._data.id,
             initialNotification: true,
@@ -72,13 +65,20 @@ export default class App extends Component<Props> {
       });
 
     this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
-      console.log('THIS RUNS ON FOREGROUND: ', notification);
+      ToastAndroid.showWithGravityAndOffset(
+        "New article on feed, check it out!",
+        ToastAndroid.LONG,
+        ToastAndroid.TOP,
+        0,
+        80,
+      );
+      //console.log('THIS RUNS ON FOREGROUND: ', notification);
     });
   }
 
   componentWillUnmount() {
     this.notificationListener();
-    this.onTokenRefreshListener();
+    this.subscribeToTopic();
   }
 
   handleBackPress = () => {
@@ -116,7 +116,7 @@ export default class App extends Component<Props> {
       });
   };
 
-  _keyExtractor = (item, index) => item._id;
+  _keyExtractor = (item) => item._id;
 
   _onRefresh = () => {
     this.state.page = 1;

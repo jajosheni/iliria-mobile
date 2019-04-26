@@ -25,7 +25,11 @@ export default class LoginPage extends Component {
                 });
             }
         } catch(e) {
-            console.log('Reading error:', e);
+          ToastAndroid.showWithGravity(
+            "Welcome to Iliria Newsletter",
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+          );
         }
     };
 

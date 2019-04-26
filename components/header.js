@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import fetch from 'react-native-fetch-polyfill';
-import {View, Text, ScrollView, Image, TouchableOpacity} from 'react-native';
+import {View, ScrollView, Image, TouchableOpacity} from 'react-native';
 import styles from './styles/categoryStyle';
 import Category from './category';
 import {HOME} from './styles/common';
