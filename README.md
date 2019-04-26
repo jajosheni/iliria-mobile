@@ -7,7 +7,7 @@
 
 <h4 align="center">Cross Platform Digital newsletter application</h4>
 <p align="center">
-	<img width="270px" src="./scr/scr1.jpg"/><img width="270px" src="./scr/scr2.jpg"/><img width="270px" src="./scr/scr3.jpg"/>
+	<img width="260px" src="./scr/scr1.jpg"/><img width="260px" src="./scr/scr2.jpg"/><img width="260px" src="./scr/scr3.jpg"/>
 </p>
 
 ### Installation
