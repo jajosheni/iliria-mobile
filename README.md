@@ -31,4 +31,4 @@ $ npm run android
 #### NOTE:
   1. Replace google-services.json at `/android/app`
   with your own file, you can get it from `firebase`.
-  2. Put your own path of android SDK at `/android/local.properties/`
+  2. Create file and put your own path of android SDK at `/android/local.properties/`
