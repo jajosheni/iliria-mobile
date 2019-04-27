@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import fetch from 'react-native-fetch-polyfill';
-import {Image, View, Text, ScrollView} from 'react-native';
+import {Image, View, Text, ScrollView, ToastAndroid} from 'react-native';
 import styles from './styles/articleStyle';
 import MyButton from './button';
 import {_cantConnect} from "./modules/cantConnect";
@@ -65,8 +65,17 @@ export default class ArticlePage extends Component {
                     disliked: this.state.dislikes.includes(this.state.user),
                 });
         }).catch((error) => {
-            _cantConnect();
-            });
+            if(error.toString().includes('SyntaxError'))
+                ToastAndroid.showWithGravityAndOffset(
+                    '404! Article Not Found.',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                    0,
+                    20,
+                );
+            else
+                _cantConnect();
+        });
 
         //UPDATE VIEWS
         let form = new FormData();
